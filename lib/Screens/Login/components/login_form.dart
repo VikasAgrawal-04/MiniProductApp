@@ -19,6 +19,7 @@ class LoginForm extends StatefulWidget {
 }
 
 class _LoginFormState extends State<LoginForm> {
+  final _formKey = GlobalKey<FormState>();
   final textController = TextEditingController();
   final passController = TextEditingController();
   bool _isObscure = true;
@@ -86,6 +87,7 @@ class _LoginFormState extends State<LoginForm> {
   @override
   Widget build(BuildContext context) {
     return Form(
+      key: _formKey,
       child: Column(
         children: [
           TextFormField(
@@ -101,10 +103,14 @@ class _LoginFormState extends State<LoginForm> {
                 child: Icon(Icons.person),
               ),
             ),
+            validator: (value) {
+              if(value == null || value.isEmpty) return "This field is required";
+              return null;
+            },
           ),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: defaultPadding),
-            child: TextField(
+            child: TextFormField(
               controller: passController,
               textInputAction: TextInputAction.done,
               cursorColor: kPrimaryColor,
@@ -126,6 +132,10 @@ class _LoginFormState extends State<LoginForm> {
                   child: Icon(Icons.lock),
                 ),
               ),
+              validator: (value) {
+                if(value == null || value.isEmpty) return "This field is required";
+                return null;
+              },
             ),
           ),
           const SizedBox(height: defaultPadding),
@@ -133,6 +143,8 @@ class _LoginFormState extends State<LoginForm> {
             tag: "login_btn",
             child: ElevatedButton(
               onPressed: () async {
+                // Validate returns true if the form is valid, or false otherwise.
+                if (_formKey.currentState!.validate()) {
                   login(textController.text,passController.text);
                   Navigator.push(
                     context,
@@ -142,6 +154,7 @@ class _LoginFormState extends State<LoginForm> {
                       },
                     ),
                   );
+                }
               },
               child: Text(
                 "Login".toUpperCase(),
