@@ -18,6 +18,7 @@ class SignUpForm extends StatefulWidget {
 }
 
 class _SignUpFormState extends State<SignUpForm> {
+  final _formKey= GlobalKey<FormState>();
   final textController = TextEditingController();
   final passController = TextEditingController();
   bool _isObscure = true;
@@ -78,6 +79,7 @@ class _SignUpFormState extends State<SignUpForm> {
   @override
   Widget build(BuildContext context) {
     return Form(
+      key: _formKey,
       child: Column(
         children: [
           TextFormField(
@@ -93,6 +95,10 @@ class _SignUpFormState extends State<SignUpForm> {
                 child: Icon(Icons.person),
               ),
             ),
+              validator: (value) {
+                if(value == null || value.isEmpty) return "This field is required";
+                return null;
+              },
           ),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: defaultPadding),
@@ -117,20 +123,27 @@ class _SignUpFormState extends State<SignUpForm> {
                   child: Icon(Icons.lock),
                 ),
               ),
+              validator: (value) {
+                if(value == null || value.isEmpty) return "This field is required";
+                return null;
+              },
             ),
           ),
           const SizedBox(height: defaultPadding / 2),
           ElevatedButton(
             onPressed: () async {
-              await login(textController.text,passController.text);
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) {
-                    return HomeScreen();
-                  },
-                ),
-              );
+              // Validate returns true if the form is valid, or false otherwise.
+              if (_formKey.currentState!.validate()) {
+                login(textController.text,passController.text);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return HomeScreen();
+                    },
+                  ),
+                );
+              }
             },
             child: Text("Sign Up".toUpperCase()),
           ),
